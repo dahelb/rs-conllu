@@ -31,7 +31,6 @@
 
 use std::{error::Error, fmt, str::FromStr};
 
-pub mod cli;
 pub mod parsers;
 pub mod token;
 

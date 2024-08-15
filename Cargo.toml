@@ -15,8 +15,6 @@ serde = ["dep:serde"]
 
 [dependencies]
 serde = { version = "1.0.216", features = ["derive"], optional = true}
-clap = { version = "4.1.8", features = ["derive"] }
 thiserror = "1.0.40"
-walkdir = "2.3.2"
 derive_more = { version = "1.0.0", features = ["display"] }
 
