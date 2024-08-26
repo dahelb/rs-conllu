@@ -2,6 +2,28 @@
 //!
 //! ## Basic Usage
 //!
+//! ```
+//! use rs_conllu::{parse_file, Sentence};
+//! use std::fs::File;
+//!
+//! let file = File::open("tests/example.conllu").unwrap();
+//!
+//! // Doc is an iterator over the containing sentences.
+//! let mut doc = parse_file(file);
+//!
+//! for maybe_sentence in doc {
+//!     // The containing sentences are wrapped
+//!     // in Results as they are parsed incrementally.
+//!     if let Ok(sentence) = maybe_sentence {
+//!         for token in sentence {
+//!             // Process token, e.g. access individual fields.
+//!             println!("{}", token.form)
+//!         }
+//!     }
+//! }
+//!
+//! ```
+//!
 //! Parse a sentence in CoNNL-U format and iterate over the
 //! containing [`Token`] elements.
 //! Example taken from [CoNLL-U format description](https://universaldependencies.org/format.html).
