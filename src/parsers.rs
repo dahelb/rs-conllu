@@ -251,7 +251,10 @@ pub fn parse_sentence(input: &str) -> Result<Sentence, ConlluParseError> {
             tokens.push(token);
         }
     }
-    Ok(Sentence { meta, tokens })
+    Ok(Sentence::builder()
+        .with_tokens(tokens)
+        .with_meta(meta)
+        .build())
 }
 
 /// A `Doc` is a wrapper around a type that implements [BufRead] and produces
@@ -275,16 +278,16 @@ pub fn parse_sentence(input: &str) -> Result<Sentence, ConlluParseError> {
 ///
 /// let mut doc = Doc::new(reader);
 ///
-/// assert_eq!(doc.next(), Some(Ok(Sentence {
-///     meta: vec![],
-///     tokens: vec![
-///         Token::builder(TokenID::Single(1), "Sue".to_string()).build(),
-///         Token::builder(TokenID::Single(2), "likes".to_string()).build(),
-///         Token::builder(TokenID::Single(3), "coffee".to_string()).build(),
-///     ]
-/// })));
+/// assert_eq!(doc.next(), Some(Ok(
+///     Sentence::builder().with_tokens(
+///         vec![
+///             Token::builder(TokenID::Single(1), "Sue".to_string()).build(),
+///             Token::builder(TokenID::Single(2), "likes".to_string()).build(),
+///             Token::builder(TokenID::Single(3), "coffee".to_string()).build(),
+///         ],
+///     ).build()
+/// )));
 /// ```
-///
 pub struct Doc<T: BufRead> {
     reader: T,
     line_num: usize,
