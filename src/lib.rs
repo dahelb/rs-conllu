@@ -9,7 +9,7 @@
 //! let file = File::open("tests/example.conllu").unwrap();
 //!
 //! // Doc is an iterator over the containing sentences.
-//! let mut doc = parse_file(file);
+//! let doc = parse_file(file);
 //!
 //! for maybe_sentence in doc {
 //!     // The containing sentences are wrapped
