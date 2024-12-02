@@ -3,51 +3,50 @@
 //! ## Basic Usage
 //!
 //! ```
-//! use rs_conllu::{parse_file, Sentence};
+//! use rs_conllu::parse_file;
 //! use std::fs::File;
 //!
-//! let file = File::open("tests/example.conllu").unwrap();
+//! # use std::error::Error;
+//! # fn main() -> Result<(), Box<dyn Error>> {
+//! let file = File::open("tests/example.conllu")?;
 //!
 //! // Doc is an iterator over the containing sentences.
-//! let doc = parse_file(file);
+//! let parsed = parse_file(file)?;
 //!
-//! for maybe_sentence in doc {
-//!     // The containing sentences are wrapped
-//!     // in Results as they are parsed incrementally.
-//!     if let Ok(sentence) = maybe_sentence {
-//!         for token in sentence {
-//!             // Process token, e.g. access individual fields.
-//!             println!("{}", token.form)
-//!         }
+//! for sentence in parsed {
+//!     for token in sentence {
+//!         // Process token, e.g. access individual fields.
+//!         println!("{}", token.form)
+//!     }
+//! }
+//! # Ok(())
+//! # }
+//!
+//! ```
+//! ## Using Iterator Patterns
+//!
+//! ```
+//! use rs_conllu::{parse_file, Sentence, TokenID};
+//! use std::fs::File;
+//!
+//! # use std::error::Error;
+//! # fn main() -> Result<(), Box<dyn Error>> {
+//! let file = File::open("tests/example.conllu")?;
+//!
+//! // Doc is an iterator over the containing sentences.
+//! let mut parsed = parse_file(file)?;
+//!
+//! if let Some(s) = parsed.iter_mut().nth(0) {
+//!     if let Some(token) = s.get_token_mut(TokenID::Single(6)) {
+//!         token.form = "crabs".to_string();
+//!         token.lemma = Some("crab".to_string());
 //!     }
 //! }
 //!
+//! # Ok(())
+//! # }
 //! ```
 //!
-//! Parse a sentence in CoNNL-U format and iterate over the
-//! containing [`Token`] elements.
-//! Example taken from [CoNLL-U format description](https://universaldependencies.org/format.html).
-//!
-//! ```
-//! use rs_conllu::{parse_sentence, TokenID};
-//!
-//! let s = "# sent_id = 1
-//! ## text = They buy and sell books.
-//! 1	They	they	PRON	PRP	Case=Nom|Number=Plur	2	nsubj	2:nsubj|4:nsubj	_
-//! 2	buy	buy	VERB	VBP	Number=Plur|Person=3|Tense=Pres	0	root	0:root	_
-//! 3	and	and	CCONJ	CC	_	4	cc	4:cc	_
-//! 4	sell	sell	VERB	VBP	Number=Plur|Person=4|Tense=Pres	2	conj	0:root|2:conj	_
-//! 6	books	book	NOUN	NNS	Number=Plur	2	obj	2:obj|4:obj	SpaceAfter=No
-//! 7	.	.	PUNCT	.	_	2	punct	2:punct	_
-//! ";
-//!
-//! let sentence = parse_sentence(s).unwrap();
-//! let mut token_iter = sentence.into_iter();
-//!
-//! assert_eq!(token_iter.next().unwrap().id, TokenID::Single(1));
-//! assert_eq!(token_iter.next().unwrap().form, "buy".to_owned());
-//!
-//! ```
 
 #![allow(clippy::tabs_in_doc_comments)]
 

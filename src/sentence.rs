@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::token::{Token, TokenID};
+use crate::Token;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Sentence {
@@ -46,8 +46,13 @@ impl Sentence {
     }
 
     /// Get an iterator over the [Token] elemens in the sentence.
-    pub fn token_iter(&self) -> impl Iterator<Item = &Token> {
+    pub fn iter(&self) -> std::slice::Iter<Token> {
         self.tokens.iter()
+    }
+
+    /// Get an iterator over the [Token] elemens in the sentence.
+    pub fn iter_mut(&mut self) -> std::slice::IterMut<Token> {
+        self.tokens.iter_mut()
     }
 }
 
