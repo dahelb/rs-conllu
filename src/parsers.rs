@@ -52,10 +52,8 @@ impl ConlluParseError {
     }
 }
 
-pub fn parse_file(file: File) -> Doc<BufReader<File>> {
-    let reader = BufReader::new(file);
-
-    Doc::new(reader)
+pub fn parse_file(file: File) -> Result<ParsedDoc, ConlluParseError> {
+    Doc::from_file(file).parse()
 }
 
 /// Parse a single line in CoNLL-U format into a [`Token`].
@@ -276,9 +274,9 @@ pub fn parse_sentence(input: &str) -> Result<Sentence, ConlluParseError> {
 ///
 /// let reader = BufReader::new(conllu);
 ///
-/// let mut doc = Doc::new(reader);
+/// let mut doc_iter = Doc::new(reader).into_iter();
 ///
-/// assert_eq!(doc.next(), Some(Ok(
+/// assert_eq!(doc_iter.next(), Some(Ok(
 ///     Sentence::builder().with_tokens(
 ///         vec![
 ///             Token::builder(TokenID::Single(1), "Sue".to_string()).build(),
@@ -290,19 +288,55 @@ pub fn parse_sentence(input: &str) -> Result<Sentence, ConlluParseError> {
 /// ```
 pub struct Doc<T: BufRead> {
     reader: T,
-    line_num: usize,
 }
 
 impl<T: BufRead> Doc<T> {
     pub fn new(reader: T) -> Self {
+        Doc { reader }
+    }
+
+    pub fn parse(self) -> Result<ParsedDoc, ConlluParseError> {
+        self.into_iter()
+            .collect::<Result<Vec<Sentence>, _>>()
+            .map(|sentences| ParsedDoc { sentences })
+    }
+}
+
+impl Doc<BufReader<File>> {
+    pub fn from_file(file: File) -> Self {
         Doc {
+            reader: BufReader::new(file),
+        }
+    }
+}
+
+impl<T: BufRead> IntoIterator for Doc<T> {
+    type Item = Result<Sentence, ConlluParseError>;
+    type IntoIter = IntoIter<T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        IntoIter {
+            reader: self.reader,
+            line_num: 0,
+        }
+    }
+}
+
+pub struct IntoIter<T: BufRead> {
+    reader: T,
+    line_num: usize,
+}
+
+impl<T: BufRead> IntoIter<T> {
+    pub fn new(reader: T) -> Self {
+        IntoIter {
             reader,
             line_num: 0,
         }
     }
 }
 
-impl<T: BufRead> Iterator for Doc<T> {
+impl<T: BufRead> Iterator for IntoIter<T> {
     type Item = Result<Sentence, ConlluParseError>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -343,6 +377,29 @@ impl<T: BufRead> Iterator for Doc<T> {
             e.adjust_line(self.line_num - num_lines_in_buffer + 1);
             e
         }))
+    }
+}
+
+pub struct ParsedDoc {
+    sentences: Vec<Sentence>,
+}
+
+impl ParsedDoc {
+    pub fn iter(&self) -> std::slice::Iter<Sentence> {
+        self.sentences.iter()
+    }
+
+    pub fn iter_mut(&mut self) -> std::slice::IterMut<Sentence> {
+        self.sentences.iter_mut()
+    }
+}
+
+impl IntoIterator for ParsedDoc {
+    type Item = Sentence;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.sentences.into_iter()
     }
 }
 

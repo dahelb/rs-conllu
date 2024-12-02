@@ -1,12 +1,16 @@
 use std::{collections::HashMap, fs::File};
 
-use rs_conllu::{parse_file, token::Dep, token::Token, token::TokenID, UPOS};
+use rs_conllu::{
+    parsers::Doc,
+    token::{Dep, Token, TokenID},
+    UPOS,
+};
 
 #[test]
 fn test_file_parse() {
     let file = File::open("./tests/example.conllu").unwrap();
 
-    let s = parse_file(file).next().unwrap().unwrap();
+    let s = Doc::from_file(file).into_iter().next().unwrap().unwrap();
 
     let mut token_iter = s.into_iter();
 
