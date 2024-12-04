@@ -256,7 +256,7 @@ pub fn parse_sentence(input: &str) -> Result<Sentence, ConlluParseError> {
 }
 
 /// A `Doc` is a wrapper around a type that implements [BufRead] and produces
-/// lines in ConLL-U format that can be parsed into sentences, which
+/// lines in ConLL-U format that can be parsed into sentences, which in turn
 /// can be accessed via iteration.
 ///
 ///  For the common use case of parsing a file in CoNLL-U format,
@@ -353,11 +353,6 @@ impl<T: BufRead> Iterator for IntoIter<T> {
             return None;
         }
 
-        // fill the buffer until we are at a sentence break
-        // or at the end of the file
-        // while !buffer.ends_with("\n\n") && bytes != 0 {
-        //     bytes = self.reader.read_line(&mut buffer).unwrap();
-        // }
         loop {
             bytes = self.reader.read_line(&mut buffer).unwrap();
             self.line_num += 1;

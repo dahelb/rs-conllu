@@ -10,10 +10,12 @@
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! let file = File::open("tests/example.conllu")?;
 //!
-//! // Doc is an iterator over the containing sentences.
 //! let parsed = parse_file(file)?;
 //!
+//! // parse_file returns a `ParsedDoc`, which allows iteration
+//! // over the contained sentences.
 //! for sentence in parsed {
+//!     // we can also iterate over the contained sentences
 //!     for token in sentence {
 //!         // Process token, e.g. access individual fields.
 //!         println!("{}", token.form)
@@ -23,7 +25,12 @@
 //! # }
 //!
 //! ```
-//! ## Using Iterator Patterns
+//! ## Modifying
+//!
+//! If manipulation is necessary, sentences can be iterated
+//! mutably. The example below shows how we can change the
+//! `form` and `lemma` of a particular token.
+//!
 //!
 //! ```
 //! use rs_conllu::{parse_file, Sentence, TokenID};
@@ -33,7 +40,6 @@
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! let file = File::open("tests/example.conllu")?;
 //!
-//! // Doc is an iterator over the containing sentences.
 //! let mut parsed = parse_file(file)?;
 //!
 //! if let Some(s) = parsed.iter_mut().nth(0) {
@@ -46,7 +52,6 @@
 //! # Ok(())
 //! # }
 //! ```
-//!
 
 #![allow(clippy::tabs_in_doc_comments)]
 
