@@ -171,6 +171,7 @@ impl TokenBuilder {
     }
 }
 
+/// A head-relation pair, used in the `deps` field of [Token]
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Dep {
