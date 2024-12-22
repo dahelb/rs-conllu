@@ -286,6 +286,7 @@ pub fn parse_sentence(input: &str) -> Result<Sentence, ConlluParseError> {
 ///     ).build()
 /// )));
 /// ```
+// TODO: rename this to "Parser"
 pub struct Doc<T: BufRead> {
     reader: T,
 }
