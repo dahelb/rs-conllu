@@ -15,7 +15,7 @@
 //! // parse_file returns a `ParsedDoc`, which allows iteration
 //! // over the contained sentences.
 //! for sentence in parsed {
-//!     // we can also iterate over the contained sentences
+//!     // We can also iterate over the tokens in the sentence.
 //!     for token in sentence {
 //!         // Process token, e.g. access individual fields.
 //!         println!("{}", token.form)
