@@ -1,7 +1,7 @@
 use std::{collections::HashMap, fs::File};
 
 use rs_conllu::{
-    parsers::Doc,
+    parsers::Parser,
     token::{Dep, Token, TokenID},
     UPOS,
 };
@@ -10,7 +10,7 @@ use rs_conllu::{
 fn test_file_parse() {
     let file = File::open("./tests/example.conllu").unwrap();
 
-    let s = Doc::from_file(file).into_iter().next().unwrap().unwrap();
+    let s = Parser::from_file(file).into_iter().next().unwrap().unwrap();
 
     let mut token_iter = s.into_iter();
 

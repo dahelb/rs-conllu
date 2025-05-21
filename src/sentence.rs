@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::Token;
+use crate::{Token, TokenID};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Sentence {
