@@ -9,8 +9,9 @@ use std::{
 use thiserror::Error;
 
 use crate::{
+    sentence::Sentence,
     token::{Dep, Token, TokenID},
-    ParseUposError, Sentence, UPOS,
+    ParseUposError, UPOS,
 };
 
 #[derive(Error, PartialEq, Debug, Eq)]
@@ -53,7 +54,7 @@ impl ConlluParseError {
 }
 
 pub fn parse_file(file: File) -> Result<ParsedDoc, ConlluParseError> {
-    Doc::from_file(file).parse()
+    Parser::from_file(file).parse()
 }
 
 /// Parse a single line in CoNLL-U format into a [`Token`].
@@ -175,7 +176,7 @@ fn parse_id(field: &str) -> Result<TokenID, ParseIdError> {
         return match sep {
             '-' => Ok(TokenID::Range(ids[0], ids[1])),
             '.' => Ok(TokenID::Empty(ids[0], ids[1])),
-            _ => panic!(),
+            _ => unreachable!("Separator was checked to be only '-' or '.'"),
         };
     }
 
@@ -255,7 +256,7 @@ pub fn parse_sentence(input: &str) -> Result<Sentence, ConlluParseError> {
         .build())
 }
 
-/// A `Doc` is a wrapper around a type that implements [BufRead] and produces
+/// A `Parser` is a wrapper around a type that implements [BufRead] and produces
 /// lines in ConLL-U format that can be parsed into sentences, which in turn
 /// can be accessed via iteration.
 ///
@@ -265,7 +266,7 @@ pub fn parse_sentence(input: &str) -> Result<Sentence, ConlluParseError> {
 /// ```rust
 /// use std::io::BufReader;
 /// use rs_conllu::{Sentence, Token, TokenID};
-/// use rs_conllu::parsers::Doc;
+/// use rs_conllu::parsers::Parser;
 ///
 /// let conllu = "1\tSue\t_\t_\t_\t_\t_\t_\t_\t_
 /// 2\tlikes\t_\t_\t_\t_\t_\t_\t_\t_
@@ -274,7 +275,7 @@ pub fn parse_sentence(input: &str) -> Result<Sentence, ConlluParseError> {
 ///
 /// let reader = BufReader::new(conllu);
 ///
-/// let mut doc_iter = Doc::new(reader).into_iter();
+/// let mut doc_iter = Parser::new(reader).into_iter();
 ///
 /// assert_eq!(doc_iter.next(), Some(Ok(
 ///     Sentence::builder().with_tokens(
@@ -287,13 +288,13 @@ pub fn parse_sentence(input: &str) -> Result<Sentence, ConlluParseError> {
 /// )));
 /// ```
 // TODO: rename this to "Parser"
-pub struct Doc<T: BufRead> {
+pub struct Parser<T: BufRead> {
     reader: T,
 }
 
-impl<T: BufRead> Doc<T> {
+impl<T: BufRead> Parser<T> {
     pub fn new(reader: T) -> Self {
-        Doc { reader }
+        Parser { reader }
     }
 
     pub fn parse(self) -> Result<ParsedDoc, ConlluParseError> {
@@ -303,15 +304,15 @@ impl<T: BufRead> Doc<T> {
     }
 }
 
-impl Doc<BufReader<File>> {
+impl Parser<BufReader<File>> {
     pub fn from_file(file: File) -> Self {
-        Doc {
+        Parser {
             reader: BufReader::new(file),
         }
     }
 }
 
-impl<T: BufRead> IntoIterator for Doc<T> {
+impl<T: BufRead> IntoIterator for Parser<T> {
     type Item = Result<Sentence, ConlluParseError>;
     type IntoIter = IntoIter<T>;
 
