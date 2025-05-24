@@ -84,8 +84,11 @@ impl Error for ParseUposError {}
 
 /// The set of Universal POS tags according
 /// to [UD version 2](https://universaldependencies.org/u/pos/index.html).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, derive_more::Display)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize, derive_more::Display)
+)]
 pub enum UPOS {
     /// adjective
     ADJ,
