@@ -1,3 +1,5 @@
+//! Parsers for tokens, sentences and whole documents, and associated code.
+
 use std::{
     collections::HashMap,
     fs::File,
@@ -14,32 +16,46 @@ use crate::{
     ParseUposError, UPOS,
 };
 
+/// Errors resulting from parsing a token id.
 #[derive(Error, PartialEq, Debug, Eq)]
 pub enum ParseIdError {
+    /// The id range could not be parsed.
     #[error("Range must be two integers separated by -")]
     InvalidRange,
+    /// The id could not be parsed as an integer.
     #[error("Could not parse {input:?} as integer.")]
     FailedIntParsing {
+        /// The input that failed to parse.
         input: String,
+        /// The source error.
         source: ParseIntError,
     },
 }
 
+/// Error resulting from parsing a [`Token`].
 #[derive(Error, Debug, PartialEq, Eq)]
 pub enum ParseErrorType {
+    /// An expected fiel is missing.
     #[error("Missing field: {0}")]
     MissingField(&'static str),
+    /// The id failed to parse.
     #[error(transparent)]
     FailedIdParse(#[from] ParseIdError),
+    /// Error in parsing the UPOS tag.
     #[error("Failed to parse field {field} as UPOS")]
     FailedUposParse {
+        /// The source error.
         source: ParseUposError,
+        /// The field that was tried to be parsed.
         field: String,
     },
+    /// Error in parsing a field that consists of key-value pairs
+    /// separated by a `=`
     #[error("Key value pairs must be separated by `=`")]
     KeyValueParseError,
 }
 
+/// Error when parsing a file in CoNLL-U format.
 #[derive(Error, Debug, PartialEq, Eq)]
 #[error("Parse error in line {line}: {err}")]
 pub struct ConlluParseError {
@@ -53,6 +69,20 @@ impl ConlluParseError {
     }
 }
 
+/// Parse a file into a [`ParsedDoc`].
+///
+///
+/// ```rust
+/// use std::fs::File;
+///
+/// # use std::error::Error;
+/// use rs_conllu::parse_file;
+///
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// let file = File::open("tests/example.conllu")?;
+/// # Ok(())
+/// # }
+/// ```
 pub fn parse_file(file: File) -> Result<ParsedDoc, ConlluParseError> {
     Parser::from_file(file).parse()
 }
@@ -260,8 +290,6 @@ pub fn parse_sentence(input: &str) -> Result<Sentence, ConlluParseError> {
 /// lines in ConLL-U format that can be parsed into sentences, which in turn
 /// can be accessed via iteration.
 ///
-///  For the common use case of parsing a file in CoNLL-U format,
-///  this crate provides the convenience function [parse_file], which produces a `Doc<BufReader<File>>`.
 ///
 /// ```rust
 /// use std::io::BufReader;
@@ -287,16 +315,21 @@ pub fn parse_sentence(input: &str) -> Result<Sentence, ConlluParseError> {
 ///     ).build()
 /// )));
 /// ```
-// TODO: rename this to "Parser"
+/// For the common use case of parsing a file in CoNLL-U format,
+/// this crate provides the convenience function [parse_file] for parsing a file into
+/// a [`ParsedDoc`].
+///
 pub struct Parser<T: BufRead> {
     reader: T,
 }
 
 impl<T: BufRead> Parser<T> {
+    /// Create a new parser.
     pub fn new(reader: T) -> Self {
         Parser { reader }
     }
 
+    /// Parse the whole document.
     pub fn parse(self) -> Result<ParsedDoc, ConlluParseError> {
         self.into_iter()
             .collect::<Result<Vec<Sentence>, _>>()
@@ -305,6 +338,7 @@ impl<T: BufRead> Parser<T> {
 }
 
 impl Parser<BufReader<File>> {
+    /// Create a `Parser` from a [`File`].
     pub fn from_file(file: File) -> Self {
         Parser {
             reader: BufReader::new(file),
@@ -324,18 +358,11 @@ impl<T: BufRead> IntoIterator for Parser<T> {
     }
 }
 
+/// An iterator that produces parsed [`Sentence`] elements. Created by
+/// the [`Parser::into_iter`] method.
 pub struct IntoIter<T: BufRead> {
     reader: T,
     line_num: usize,
-}
-
-impl<T: BufRead> IntoIter<T> {
-    pub fn new(reader: T) -> Self {
-        IntoIter {
-            reader,
-            line_num: 0,
-        }
-    }
 }
 
 impl<T: BufRead> Iterator for IntoIter<T> {
@@ -377,15 +404,18 @@ impl<T: BufRead> Iterator for IntoIter<T> {
     }
 }
 
+/// Represents a collection of parsed [`Sentence`] elements.
 pub struct ParsedDoc {
     sentences: Vec<Sentence>,
 }
 
 impl ParsedDoc {
+    /// Iterate over the containing [`Sentence`] elements.
     pub fn iter(&self) -> std::slice::Iter<Sentence> {
         self.sentences.iter()
     }
 
+    /// Iterate __mutably__ over the containing [`Sentence`] elements.
     pub fn iter_mut(&mut self) -> std::slice::IterMut<Sentence> {
         self.sentences.iter_mut()
     }
