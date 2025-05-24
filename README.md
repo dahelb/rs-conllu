@@ -7,13 +7,19 @@ This project aims to provide a parser for the CoNLL-U format of the Universal De
 Parse a file in CoNLL-U format and iterate over the containing sentences.
 
 ```rust
-let file = File::open("example.conllu").unwrap();
+use rs_conllu::parse_file;
+use std::fs::File;
 
-let doc = parse_file(file);
+let file = File::open("tests/example.conllu")?;
 
-for sentence in doc {
-    for token in sentence.unwrap() {
-        println!("{}", token.form);
+let parsed = parse_file(file)?;
+
+// Iterate over the contained sentences.
+for sentence in parsed {
+    // We can also iterate over the tokens in the sentence.
+    for token in sentence {
+        // Process token, e.g. access individual fields.
+        println!("{}", token.form)
     }
 }
 ```
@@ -26,3 +32,4 @@ for sentence in doc {
 ## Limitations
 
 Parsing happens in a "flat" manner, relations between tokens are not respected.
+
