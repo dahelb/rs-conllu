@@ -1,3 +1,4 @@
+#![warn(missing_docs)]
 //! A library for parsing the CoNNL-U format.
 //!
 //! ## Basic Usage
@@ -69,8 +70,7 @@ pub use parsers::{parse_file, parse_sentence, parse_token};
 #[cfg(feature = "serde")]
 pub use serde::{Deserialize, Serialize};
 
-pub struct Feature<'a>(pub &'a str, pub &'a str);
-
+/// Error used when a Universal POS tag could not be parsed.
 #[derive(Debug, PartialEq, Eq)]
 pub struct ParseUposError;
 
@@ -87,22 +87,39 @@ impl Error for ParseUposError {}
 #[derive(Debug, Clone, Copy, PartialEq, Eq, derive_more::Display)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum UPOS {
+    /// adjective
     ADJ,
+    /// adposition
     ADP,
+    /// adverb
     ADV,
+    /// auxiliary
     AUX,
+    /// coordinating conjunction
     CCONJ,
+    /// determiner
     DET,
+    /// interjection
     INTJ,
+    /// noun
     NOUN,
+    /// numeral
     NUM,
+    /// particle
     PART,
+    /// pronoun
     PRON,
+    /// proper noun
     PROPN,
+    /// punctuation
     PUNCT,
+    /// subordinating conjunction
     SCONJ,
+    /// symbol
     SYM,
+    /// verb
     VERB,
+    /// other
     X,
 }
 

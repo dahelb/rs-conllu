@@ -1,3 +1,5 @@
+//! The basic token element, its building blocks and builder.
+
 use std::collections::HashMap;
 
 use crate::UPOS;
@@ -5,6 +7,7 @@ use crate::UPOS;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
+/// The id of a [`Token`].
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum TokenID {
@@ -89,7 +92,7 @@ pub struct TokenBuilder {
 }
 
 impl TokenBuilder {
-    /// Contstructor for [TokenBuilder]. Both `id` and `form` are mandatory
+    /// Constructor for [TokenBuilder]. Both `id` and `form` are mandatory
     /// fields and thus required when instantiating.
     pub fn new(id: TokenID, form: String) -> TokenBuilder {
         TokenBuilder {

@@ -1,7 +1,11 @@
+//! Sentence and the related builder.
+
 use std::collections::HashMap;
 
 use crate::{Token, TokenID};
 
+/// A single sentence, consists of [`Token`] elements and the associated
+/// metadata.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Sentence {
     meta: Vec<String>,
@@ -10,10 +14,12 @@ pub struct Sentence {
 }
 
 impl Sentence {
+    /// Return a new [`SentenceBuilder`]
     pub fn builder() -> SentenceBuilder {
         SentenceBuilder::default()
     }
 
+    /// Get a reference of a [`Token`] by its id in the sentence.
     pub fn get_token(&self, id: TokenID) -> Option<&Token> {
         if let Some(idx) = self.id_to_index.get(&id) {
             let token = self.tokens.get(*idx);
@@ -22,7 +28,7 @@ impl Sentence {
         None
     }
 
-    /// Get a mutable reference of a Token by its id in the sentence.
+    /// Get a mutable reference of a [`Token`] by its id in the sentence.
     ///
     /// ```rust
     /// use rs_conllu::{TokenID, parse_sentence};
@@ -41,6 +47,7 @@ impl Sentence {
         None
     }
 
+    /// Get the metdata of the sentence.
     pub fn get_meta(&self) -> &Vec<String> {
         &self.meta
     }
@@ -65,6 +72,18 @@ impl IntoIterator for Sentence {
     }
 }
 
+/// Builder for [`Sentence`] structs..
+///
+/// ```rust
+/// use rs_conllu::{Sentence, Token, TokenID};
+///
+/// let t1 = Token::builder(TokenID::Single(1), "Hello".to_string()).build();
+///
+/// let sentence = Sentence::builder()
+///     .with_meta(vec!["sent_id = 0".to_string()])
+///     .push_token(t1)
+///     .build();
+/// ```
 #[derive(Default)]
 pub struct SentenceBuilder {
     tokens: Vec<Token>,
@@ -72,21 +91,25 @@ pub struct SentenceBuilder {
 }
 
 impl SentenceBuilder {
+    /// Initialize the builder with a set of [`Token`] elements.
     pub fn with_tokens(mut self, tokens: Vec<Token>) -> SentenceBuilder {
         self.tokens = tokens;
         self
     }
 
+    /// Set the metadata for the sentence.
     pub fn with_meta(mut self, meta: Vec<String>) -> SentenceBuilder {
         self.meta = meta;
         self
     }
 
+    /// Add a single [`Token`] to the sentence being built.
     pub fn push_token(mut self, token: Token) -> SentenceBuilder {
         self.tokens.push(token);
         self
     }
 
+    /// Consume the builder and create the final [`Sentence`] struct.
     pub fn build(self) -> Sentence {
         let id_to_index: HashMap<TokenID, usize> = self
             .tokens
