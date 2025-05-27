@@ -437,4 +437,26 @@ mod test {
 
         assert_eq!(token, parse_token(line).unwrap());
     }
+
+    #[test]
+    fn test_sentence_split() {
+        let s = "foo\nbar\n\nfoo\nbaz";
+
+        let mut splitter = SentenceSplitter::new(s);
+
+        assert_eq!(splitter.next(), Some("foo\nbar"));
+        assert_eq!(splitter.next(), Some("foo\nbaz"));
+        assert!(splitter.next().is_none());
+    }
+
+    #[test]
+    fn test_sentence_split_trailing_newline() {
+        let s = "foo\nbar\n\nfoo\nbaz\n";
+
+        let mut splitter = SentenceSplitter::new(s);
+
+        assert_eq!(splitter.next(), Some("foo\nbar"));
+        assert_eq!(splitter.next(), Some("foo\nbaz\n"));
+        assert!(splitter.next().is_none());
+    }
 }
