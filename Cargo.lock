@@ -43,7 +43,7 @@ dependencies = [
 
 [[package]]
 name = "rs-conllu"
-version = "0.3.0"
+version = "0.4.1"
 dependencies = [
  "derive_more",
  "serde",

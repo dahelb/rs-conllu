@@ -1,20 +1,20 @@
 [package]
 name = "rs-conllu"
 description = "A parser for the CoNLL-U format of the Universal Dependencies project."
-version = "0.3.0"
+version = "0.4.1"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/davidhelbig/rs-conllu"
+repository = "https://github.com/dahelbig/rs-conllu"
 keywords = ["nlp"]
 categories = ["parser-implementations", "text-processing", "science"]
 
 [features]
-serde = ["dep:serde", "dep:derive_more"]
+serde = ["dep:serde"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 serde = { version = "1.0.216", features = ["derive"], optional = true}
 thiserror = "1.0.40"
-derive_more = { version = "1.0.0", features = ["display"], optional = true }
+derive_more = { version = "1.0.0", features = ["display"] }
 
