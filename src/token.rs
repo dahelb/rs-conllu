@@ -1,6 +1,6 @@
 //! The basic token element, its building blocks and builder.
 
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Display};
 
 use crate::UPOS;
 
@@ -20,6 +20,16 @@ pub enum TokenID {
     /// regular node (or 0 if it is a the beginning of a sentence). They are separated
     /// by a decimal point and represent an "empty" node.
     Empty(usize, usize),
+}
+
+impl Display for TokenID {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TokenID::Single(id) => write!(f, "{id}"),
+            TokenID::Range(start, end) => write!(f, "{start}-{end}"),
+            TokenID::Empty(parent, id) => write!(f, "{parent}.{id}"),
+        }
+    }
 }
 
 type Features = HashMap<String, String>;
