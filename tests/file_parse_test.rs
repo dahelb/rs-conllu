@@ -10,9 +10,11 @@ use rs_conllu::{
 fn test_file_parse() {
     let file = File::open("./tests/example.conllu").unwrap();
 
-    let s = parse_file(file).unwrap().into_iter().next().unwrap();
+    let mut sentence_iter = parse_file(file).unwrap().into_iter();
 
-    let mut token_iter = s.into_iter();
+    let s1 = sentence_iter.next().unwrap();
+
+    let mut token_iter = s1.into_iter();
 
     let token = token_iter.next().unwrap();
 
@@ -42,5 +44,7 @@ fn test_file_parse() {
             ]),
             misc: None
         }
-    )
+    );
+
+    assert!(sentence_iter.next().is_none());
 }
