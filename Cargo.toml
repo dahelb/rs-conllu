@@ -4,7 +4,7 @@ description = "A parser for the CoNLL-U format of the Universal Dependencies pro
 version = "0.4.1"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/dahelbig/rs-conllu"
+repository = "https://github.com/dahelb/rs-conllu"
 keywords = ["nlp"]
 categories = ["parser-implementations", "text-processing", "science"]
 
